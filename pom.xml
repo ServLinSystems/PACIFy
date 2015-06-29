@@ -42,7 +42,7 @@
         <module>model</module>
         <module>commandline</module>
         <module>impl</module>
-        <!-- module>pacify-maven-plugin</module -->
+        <module>pacify-maven-plugin</module>
         <module>resolver</module>
         <module>assembly</module>
     </modules>
