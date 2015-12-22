@@ -1,5 +1,8 @@
 package com.geewhiz.pacify.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.jvnet.jaxb2_commons.lang.EqualsStrategy;
 import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
@@ -69,4 +72,29 @@ public abstract class PArchiveBase {
         // we don't have any attribute in this class so not needed
         return buffer;
     }
+    
+    public abstract List<Object> getFilesAndXMLFiles(); 
+    
+    public List<PFile> getPFiles() {
+        List<PFile> result = new ArrayList<PFile>();
+
+        for (Object entry : getFilesAndXMLFiles()) {
+            if (entry instanceof PFile) {
+                result.add((PFile) entry);
+            }
+        }
+        return result;
+    }
+    
+    public List<PXml> getPXmls() {
+        List<PXml> result = new ArrayList<PXml>();
+
+        for (Object entry : getFilesAndXMLFiles()) {
+            if (entry instanceof PXml) {
+                result.add((PXml) entry);
+            }
+        }
+        return result;
+    }
+    
 }

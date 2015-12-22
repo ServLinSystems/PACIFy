@@ -14,9 +14,12 @@
         <jaxb:bindings node="xsd:complexType[@name='PArchive']">
             <inheritance:extends>PArchiveBase</inheritance:extends>
         </jaxb:bindings>
-        <jaxb:bindings node="xsd:complexType[@name='PArchive']/*/xsd:element[@name='File']">
-            <jaxb:property name="PFiles"/>
+        <jaxb:bindings node="xsd:complexType[@name='PXml']">
+            <inheritance:extends>PXmlBase</inheritance:extends>
         </jaxb:bindings>
+        <!-- jaxb:bindings node="xsd:complexType[@name='PArchive']/*/xsd:element[@name='File']">
+            <jaxb:property name="PFiles"/>
+        </jaxb:bindings-->
         <jaxb:bindings node="xsd:complexType[@name='PFile']/*/xsd:element[@name='Property']">
             <jaxb:property name="PProperties"/>
         </jaxb:bindings>

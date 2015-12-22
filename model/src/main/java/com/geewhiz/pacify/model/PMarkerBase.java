@@ -43,7 +43,7 @@ public abstract class PMarkerBase {
     public List<PFile> getPFiles() {
         List<PFile> result = new ArrayList<PFile>();
 
-        for (Object entry : getFilesAndArchives()) {
+        for (Object entry : getFilesAndArchivesAndXMLFiles()) {
             if (entry instanceof PFile) {
                 result.add((PFile) entry);
             }
@@ -54,15 +54,26 @@ public abstract class PMarkerBase {
     public List<PArchive> getPArchives() {
         List<PArchive> result = new ArrayList<PArchive>();
 
-        for (Object entry : getFilesAndArchives()) {
+        for (Object entry : getFilesAndArchivesAndXMLFiles()) {
             if (entry instanceof PArchive) {
                 result.add((PArchive) entry);
             }
         }
         return result;
     }
+    
+    public List<PXml> getPXmls() {
+        List<PXml> result = new ArrayList<PXml>();
 
-    public abstract List<Object> getFilesAndArchives();
+        for (Object entry : getFilesAndArchivesAndXMLFiles()) {
+            if (entry instanceof PXml) {
+                result.add((PXml) entry);
+            }
+        }
+        return result;
+    }
+
+    public abstract List<Object> getFilesAndArchivesAndXMLFiles();
 
     public File getFolder() {
         return file.getParentFile();
@@ -70,6 +81,10 @@ public abstract class PMarkerBase {
 
     public File getAbsoluteFileFor(PFile pFile) {
         return new File(getFolder(), pFile.getRelativePath());
+    }
+    
+    public File getAbsoluteFileFor(PXml pXml) {
+        return new File(getFolder(), pXml.getRelativePath());
     }
 
     public File getAbsoluteFileFor(PArchive pArchive) {
