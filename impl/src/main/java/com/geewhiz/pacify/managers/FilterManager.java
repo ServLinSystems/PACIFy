@@ -20,9 +20,9 @@ package com.geewhiz.pacify.managers;
  */
 
 import java.io.File;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -39,11 +39,13 @@ import com.geewhiz.pacify.exceptions.PropertyNotFoundRuntimeException;
 import com.geewhiz.pacify.filter.PacifyFilter;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PLocation;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.PXml;
 import com.geewhiz.pacify.utils.FileUtils;
 import com.geewhiz.pacify.utils.Utils;
+import com.geewhiz.pacify.xml.XmlProcessor;
 
 public class FilterManager {
 
@@ -90,9 +92,13 @@ public class FilterManager {
 		logger.info("      Customize XML File [{}]", pXml.getRelativePath());
 		logger.debug("          Filtering [{}]", pMarker.getAbsoluteFileFor(pXml).getAbsolutePath());
 
-		File fileToFilter = pMarker.getAbsoluteFileFor(pXml);
-		pXml.getPropertiesToResolve()
+		Map<String, String> propertyValues = new HashMap<String, String>();
+		LinkedHashSet<Defect> defects = fillPropertyValuesFor(propertyValues, pXml.getPProperties(), pXml);
 		
+		XmlProcessor xmlProcessor = new XmlProcessor();
+		
+		defects.addAll(xmlProcessor.process(pXml, propertyValues));
+
 		return null;
 	}
 
@@ -105,7 +111,7 @@ public class FilterManager {
 		PacifyFilter pacifyFilter = getFilterForPFile(pFile);
 
 		Map<String, String> propertyValues = new HashMap<String, String>();
-		LinkedHashSet<Defect> defects = fillPropertyValuesFor(propertyValues, pFile);
+		LinkedHashSet<Defect> defects = fillPropertyValuesFor(propertyValues, pFile.getPProperties(), pFile);
 
 		String beginToken = pMarker.getBeginTokenFor(pFile);
 		String endToken = pMarker.getEndTokenFor(pFile);
@@ -134,7 +140,7 @@ public class FilterManager {
 			PacifyFilter pacifyFilter = getFilterForPFile(pArchive, pFile);
 
 			Map<String, String> propertyValues = new HashMap<String, String>();
-			LinkedHashSet<Defect> propertyValueDefects = fillPropertyValuesFor(propertyValues, pFile);
+			LinkedHashSet<Defect> propertyValueDefects = fillPropertyValuesFor(propertyValues, pFile.getPProperties(), pFile);
 			if (propertyValueDefects.size() > 0) {
 				return propertyValueDefects;
 			}
@@ -162,17 +168,17 @@ public class FilterManager {
 		return defects;
 	}
 
-	private LinkedHashSet<Defect> fillPropertyValuesFor(Map<String, String> propertyValues, PFile pFile) {
+	private LinkedHashSet<Defect> fillPropertyValuesFor(Map<String, String> propertyValues,
+			List<PProperty> pProperties, PLocation pLocation) {
 		LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-		for (PProperty pProperty : pFile.getPProperties()) {
+		for (PProperty pProperty : pProperties) {
 			String propertyName = pProperty.getName();
 			String propertyValue = null;
 			try {
 				propertyValue = propertyResolveManager.getPropertyValue(pProperty);
 			} catch (PropertyNotFoundRuntimeException e) {
-				Defect defect = new PropertyNotDefinedDefect(pMarker, pFile, pProperty,
-						propertyResolveManager.toString());
+				Defect defect = new PropertyNotDefinedDefect(pMarker, pLocation, pProperty, propertyResolveManager.toString());
 				defects.add(defect);
 				continue;
 			}

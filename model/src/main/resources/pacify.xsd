@@ -96,15 +96,14 @@
 	<xs:complexType name="PXmlCreate">
 		<xs:choice>
 			<xs:element name="FixedString" type="xs:string" />
-			<xs:element name="Resolve" type="PProperty" />
+			<xs:element name="Property" type="PProperty" />
 		</xs:choice>
 	</xs:complexType>
 	<xs:complexType name="PXmlUpdate">
-		<xs:simpleContent>
-			<xs:extension base="xs:string">
-				<xs:attribute name="Resolve" type="xs:boolean" default="false" />
-			</xs:extension>
-		</xs:simpleContent>
+		<xs:choice>
+			<xs:element name="FixedString" type="xs:string" />
+			<xs:element name="Property" type="PProperty" />
+		</xs:choice>
 	</xs:complexType>
 	<xs:complexType name="PXmlDelete">
 	</xs:complexType>

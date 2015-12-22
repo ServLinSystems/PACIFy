@@ -1,8 +1,7 @@
 package com.geewhiz.pacify.model;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.jvnet.jaxb2_commons.lang.EqualsStrategy;
 import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
@@ -32,13 +31,16 @@ public abstract class PXmlBase {
 
 	public abstract List<PXPath> getXPaths();
 
-	public Set<String> getPropertiesToResolve() {
-		Set<String> result = new TreeSet<String>();
+	public List<PProperty> getPProperties() {
+		List<PProperty> result = new ArrayList<PProperty>();
 		for (PXPath pXPath : getXPaths()) {
-			if (pXPath.getCreate() != null && pXPath.getCreate().isResolve())
-				result.add(pXPath.getCreate().getValue());
-			if (pXPath.getUpdate() != null && pXPath.getUpdate().isResolve())
-				result.add(pXPath.getUpdate().getValue());
+			PXmlCreate create = pXPath.getCreate();
+			if (create != null && create.getProperty() != null)
+				result.add(create.getProperty());
+
+			PXmlUpdate update = pXPath.getUpdate();
+			if (update != null && update.getProperty() != null)
+				result.add(update.getProperty());
 		}
 		return result;
 	}

@@ -30,111 +30,116 @@ import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
 public abstract class PMarkerBase {
 
-    private File file;
+	private File file;
 
-    public void setFile(java.io.File file) {
-        this.file = file;
-    }
+	public void setFile(java.io.File file) {
+		this.file = file;
+	}
 
-    public File getFile() {
-        return file;
-    }
+	public File getFile() {
+		return file;
+	}
 
-    public List<PFile> getPFiles() {
-        List<PFile> result = new ArrayList<PFile>();
+	public List<PFile> getPFiles() {
+		List<PFile> result = new ArrayList<PFile>();
 
-        for (Object entry : getFilesAndArchivesAndXMLFiles()) {
-            if (entry instanceof PFile) {
-                result.add((PFile) entry);
-            }
-        }
-        return result;
-    }
+		for (Object entry : getFilesAndArchivesAndXMLFiles()) {
+			if (entry instanceof PFile) {
+				result.add((PFile) entry);
+			}
+		}
+		return result;
+	}
 
-    public List<PArchive> getPArchives() {
-        List<PArchive> result = new ArrayList<PArchive>();
+	public List<PArchive> getPArchives() {
+		List<PArchive> result = new ArrayList<PArchive>();
 
-        for (Object entry : getFilesAndArchivesAndXMLFiles()) {
-            if (entry instanceof PArchive) {
-                result.add((PArchive) entry);
-            }
-        }
-        return result;
-    }
-    
-    public List<PXml> getPXmls() {
-        List<PXml> result = new ArrayList<PXml>();
+		for (Object entry : getFilesAndArchivesAndXMLFiles()) {
+			if (entry instanceof PArchive) {
+				result.add((PArchive) entry);
+			}
+		}
+		return result;
+	}
 
-        for (Object entry : getFilesAndArchivesAndXMLFiles()) {
-            if (entry instanceof PXml) {
-                result.add((PXml) entry);
-            }
-        }
-        return result;
-    }
+	public List<PXml> getPXmls() {
+		List<PXml> result = new ArrayList<PXml>();
 
-    public abstract List<Object> getFilesAndArchivesAndXMLFiles();
+		for (Object entry : getFilesAndArchivesAndXMLFiles()) {
+			if (entry instanceof PXml) {
+				result.add((PXml) entry);
+			}
+		}
+		return result;
+	}
 
-    public File getFolder() {
-        return file.getParentFile();
-    }
+	public abstract List<Object> getFilesAndArchivesAndXMLFiles();
 
-    public File getAbsoluteFileFor(PFile pFile) {
-        return new File(getFolder(), pFile.getRelativePath());
-    }
-    
-    public File getAbsoluteFileFor(PXml pXml) {
-        return new File(getFolder(), pXml.getRelativePath());
-    }
+	public File getFolder() {
+		return file.getParentFile();
+	}
 
-    public File getAbsoluteFileFor(PArchive pArchive) {
-        return new File(getFolder(), pArchive.getRelativePath());
-    }
+	public File getAbsoluteFileFor(PFile pFile) {
+		return new File(getFolder(), pFile.getRelativePath());
+	}
 
-    public String getBeginTokenFor(PFile pFile) {
-        return pFile.getBeginToken() != null ? pFile.getBeginToken() : getBeginToken();
-    }
+	public File getAbsoluteFileFor(PXml pXml) {
+		return new File(getFolder(), pXml.getRelativePath());
+	}
 
-    public String getBeginTokenFor(PArchive pArchive, PFile pFile) {
-        if (pFile.getBeginToken() != null) {
-            return pFile.getBeginToken();
-        }
-        if (pArchive.getBeginToken() != null) {
-            return pArchive.getBeginToken();
-        }
-        return getBeginToken();
-    }
+	public File getAbsoluteFileFor(PLocation pLocation) {
+		return new File(getFolder(), pLocation.getRelativePath());
+	}
 
-    public String getEndTokenFor(PFile pFile) {
-        return pFile.getEndToken() != null ? pFile.getEndToken() : getEndToken();
-    }
+	public File getAbsoluteFileFor(PArchive pArchive) {
+		return new File(getFolder(), pArchive.getRelativePath());
+	}
 
-    public String getEndTokenFor(PArchive pArchive, PFile pFile) {
-        if (pFile.getEndToken() != null) {
-            return pFile.getEndToken();
-        }
-        if (pArchive.getEndToken() != null) {
-            return pArchive.getEndToken();
-        }
-        return getEndToken();
-    }
+	public String getBeginTokenFor(PFile pFile) {
+		return pFile.getBeginToken() != null ? pFile.getBeginToken() : getBeginToken();
+	}
 
-    public abstract String getEndToken();
+	public String getBeginTokenFor(PArchive pArchive, PFile pFile) {
+		if (pFile.getBeginToken() != null) {
+			return pFile.getBeginToken();
+		}
+		if (pArchive.getBeginToken() != null) {
+			return pArchive.getBeginToken();
+		}
+		return getBeginToken();
+	}
 
-    public abstract String getBeginToken();
+	public String getEndTokenFor(PFile pFile) {
+		return pFile.getEndToken() != null ? pFile.getEndToken() : getEndToken();
+	}
 
-    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy strategy) {
-        return file.equals(((PMarker) object).getFile());
-    }
+	public String getEndTokenFor(PArchive pArchive, PFile pFile) {
+		if (pFile.getEndToken() != null) {
+			return pFile.getEndToken();
+		}
+		if (pArchive.getEndToken() != null) {
+			return pArchive.getEndToken();
+		}
+		return getEndToken();
+	}
 
-    public int hashCode(ObjectLocator locator, HashCodeStrategy strategy) {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((file == null) ? 0 : file.hashCode());
-        return result;
-    }
+	public abstract String getEndToken();
 
-    public StringBuilder appendFields(ObjectLocator locator, StringBuilder buffer, ToStringStrategy strategy) {
-        return strategy.appendField(locator, this, "file", buffer, file);
-    }
+	public abstract String getBeginToken();
+
+	public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object,
+			EqualsStrategy strategy) {
+		return file.equals(((PMarker) object).getFile());
+	}
+
+	public int hashCode(ObjectLocator locator, HashCodeStrategy strategy) {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((file == null) ? 0 : file.hashCode());
+		return result;
+	}
+
+	public StringBuilder appendFields(ObjectLocator locator, StringBuilder buffer, ToStringStrategy strategy) {
+		return strategy.appendField(locator, this, "file", buffer, file);
+	}
 }

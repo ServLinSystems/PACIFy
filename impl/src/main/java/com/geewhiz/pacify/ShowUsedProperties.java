@@ -148,12 +148,12 @@ public class ShowUsedProperties {
 				PXmlCreate pCreate = pXPath.getCreate();
 				PXmlUpdate pUpdate = pXPath.getUpdate();
 
-				if (pCreate != null && pCreate.isResolve()) {
-					allUsedProperties.add(pCreate.getValue());
+				if (pCreate != null && pCreate.getProperty() != null) {
+					allUsedProperties.add(pCreate.getProperty().getName());
 				}
 
-				if (pUpdate != null && pUpdate.isResolve()) {
-					allUsedProperties.add(pUpdate.getValue());
+				if (pUpdate != null && pUpdate.getProperty() != null) {
+					allUsedProperties.add(pUpdate.getProperty().getName());
 				}
 			}
 		}

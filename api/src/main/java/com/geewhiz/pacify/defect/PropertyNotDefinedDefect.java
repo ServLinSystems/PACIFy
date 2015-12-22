@@ -21,6 +21,7 @@ package com.geewhiz.pacify.defect;
 
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PLocation;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
 
@@ -30,6 +31,11 @@ public class PropertyNotDefinedDefect extends DefectException {
 
     private String            resolvers;
 
+    public PropertyNotDefinedDefect(PMarker pMarker, PLocation pLocation, PProperty pProperty, String resolvers) {
+        super(pMarker, pLocation, pProperty);
+        this.resolvers = resolvers;
+    }
+    
     public PropertyNotDefinedDefect(PMarker pMarker, PFile pFile, PProperty pProperty, String resolvers) {
         super(pMarker, pFile, pProperty);
         this.resolvers = resolvers;
