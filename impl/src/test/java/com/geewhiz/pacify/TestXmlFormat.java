@@ -31,11 +31,11 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PMarker;
 
-public class TestXml {
+public class TestXmlFormat {
 
     @Test
     public void testAll() {
-        File source = new File("target/test-classes/testXml/package");
+        File source = new File("target/test-classes/testXmlFormat/package");
 
         EntityManager entityManager = new EntityManager(source);
         entityManager.initialize();
@@ -55,7 +55,6 @@ public class TestXml {
         Assert.assertEquals("foobar1", pMarker.getPFiles().get(0).getPProperties().get(0).getName());
         Assert.assertEquals("foobar1", pMarker.getPFiles().get(1).getPProperties().get(0).getName());
         Assert.assertEquals("foobar2", pMarker.getPFiles().get(2).getPProperties().get(0).getName());
-
     }
 
     @Test
@@ -69,7 +68,6 @@ public class TestXml {
 
         Assert.assertEquals(1, defects.size());
         Assert.assertEquals("com.geewhiz.pacify.defect.XMLValidationDefect", defects.get(0).getClass().getName());
-
     }
 
 }

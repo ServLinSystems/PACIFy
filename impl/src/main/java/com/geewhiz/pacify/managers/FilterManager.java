@@ -94,12 +94,14 @@ public class FilterManager {
 
 		Map<String, String> propertyValues = new HashMap<String, String>();
 		LinkedHashSet<Defect> defects = fillPropertyValuesFor(propertyValues, pXml.getPProperties(), pXml);
-		
-		XmlProcessor xmlProcessor = new XmlProcessor();
-		
-		defects.addAll(xmlProcessor.process(pXml, propertyValues));
 
-		return null;
+		XmlProcessor xmlProcessor = new XmlProcessor(pMarker, pXml, propertyValues);
+
+		defects.addAll(xmlProcessor.process());
+
+		logger.info("          [{}] xpath entries adjusted.", pXml.getXPaths().size());
+		
+		return defects;
 	}
 
 	private LinkedHashSet<Defect> filterPFile(PFile pFile) {
@@ -140,7 +142,8 @@ public class FilterManager {
 			PacifyFilter pacifyFilter = getFilterForPFile(pArchive, pFile);
 
 			Map<String, String> propertyValues = new HashMap<String, String>();
-			LinkedHashSet<Defect> propertyValueDefects = fillPropertyValuesFor(propertyValues, pFile.getPProperties(), pFile);
+			LinkedHashSet<Defect> propertyValueDefects = fillPropertyValuesFor(propertyValues, pFile.getPProperties(),
+					pFile);
 			if (propertyValueDefects.size() > 0) {
 				return propertyValueDefects;
 			}
@@ -168,8 +171,8 @@ public class FilterManager {
 		return defects;
 	}
 
-	private LinkedHashSet<Defect> fillPropertyValuesFor(Map<String, String> propertyValues,
-			List<PProperty> pProperties, PLocation pLocation) {
+	private LinkedHashSet<Defect> fillPropertyValuesFor(Map<String, String> propertyValues, List<PProperty> pProperties,
+			PLocation pLocation) {
 		LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
 		for (PProperty pProperty : pProperties) {
@@ -178,7 +181,8 @@ public class FilterManager {
 			try {
 				propertyValue = propertyResolveManager.getPropertyValue(pProperty);
 			} catch (PropertyNotFoundRuntimeException e) {
-				Defect defect = new PropertyNotDefinedDefect(pMarker, pLocation, pProperty, propertyResolveManager.toString());
+				Defect defect = new PropertyNotDefinedDefect(pMarker, pLocation, pProperty,
+						propertyResolveManager.toString());
 				defects.add(defect);
 				continue;
 			}

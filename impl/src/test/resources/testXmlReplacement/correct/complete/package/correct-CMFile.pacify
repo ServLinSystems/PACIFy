@@ -1,0 +1,14 @@
+<Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://D5430988/c$/oppermans002/projekte/0_external/PACIFy/model/src/main/resources/pacify.xsd">
+	<XMLFile RelativePath="correctConf.xml">
+		<XPath Select="/root/foo/foo">
+			<Create>
+				<FixedString>foofoo</FixedString>
+			</Create>
+		</XPath>
+		<XPath Select="/root/bar/foo">
+			<Create>
+				<Property Name="barfoo"/>
+			</Create>
+		</XPath>
+	</XMLFile>
+</Pacify>
