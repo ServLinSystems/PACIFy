@@ -31,7 +31,7 @@ public class TestXmlReplacement {
 
 		PMarker pMarker = entityManager.getPMarkers().get(0);
 
-		Assert.assertEquals(1, pMarker.getPXmls().size());
+		Assert.assertEquals(2, pMarker.getPXmls().size());
 		Assert.assertEquals("correctConf.xml", pMarker.getPXmls().get(0).getRelativePath());
 		Assert.assertEquals(1, pMarker.getPXmls().get(0).getPProperties().size());
 

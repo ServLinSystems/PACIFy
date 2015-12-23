@@ -22,14 +22,15 @@ public class XMLUtils {
 	private static final String SLASH = "/";
 	private static final String R_BRACKET = "]";
 	private static final String L_BRACKET = "[";
+	private static final String ATTRIBUTE = "@";
 
 	/**
-	 * Looks for the last '/' and returns the name of the last element
+	 * Looks for the last '/' and returns the name of the node
 	 * 
 	 * @param xpath
 	 * @return the child element name or null
 	 */
-	public static final String getChildElementName(String xpath) {
+	public static final String getChildNodeName(String xpath) {
 		if (StringUtils.isEmpty(xpath)) {
 			return null;
 		}
@@ -127,7 +128,7 @@ public class XMLUtils {
 
 		try {
 
-			String elementName = getChildElementName(xpath);
+			String nodeName = getChildNodeName(xpath);
 			String parentXPath = getParentXPath(xpath);
 
 			Node parentNode = (Node) xpathSearch.evaluate(parentXPath, document, XPathConstants.NODE);
@@ -146,17 +147,25 @@ public class XMLUtils {
 				// the new element we will create)
 				int nodesToCreate = childIndex - nodelist.getLength() - 1;
 				for (int i = 0; i < nodesToCreate; i++) {
-					Node node = document.createElement(elementName);
+					Node node = document.createElement(nodeName);
 					((Element) parentNode).appendChild(node);
 				}
 			}
 
-			// create requested element
-			Node node = document.createElement(elementName);
-			Node created = ((Node) parentNode).appendChild(node);
-			if (null != value) {
-				created.setTextContent(value);
+			// create requested node
+			Node node = null;
+			Node created = null;
+			if (nodeName.startsWith(ATTRIBUTE)) {
+				node = document.createAttribute(nodeName.substring(1));
+				((Element) parentNode).setAttribute(nodeName.substring(1), value);
+			} else {
+				node = document.createElement(nodeName);
+				created = ((Node) parentNode).appendChild(node);
+				if (null != value) {
+					created.setTextContent(value);
+				}
 			}
+
 			return created;
 		} catch (Exception e) {
 			logger.debug(e);

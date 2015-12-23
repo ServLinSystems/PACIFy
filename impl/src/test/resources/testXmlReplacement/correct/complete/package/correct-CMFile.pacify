@@ -20,4 +20,23 @@
 			<Delete />
 		</XPath>
 	</XMLFile>
+	<XMLFile RelativePath="log4j2.xml">
+		<XPath Select="/Configuration/Loggers/Root/bar/foo">
+			<Create>
+				<Property Name="barfoo" />
+			</Create>
+		</XPath>
+		<XPath  Select="/Configuration/Loggers/Logger[@name='com.geewhiz.pacify']/@newAttribute">
+			<Create>
+				<FixedString>foo</FixedString>
+			</Create>
+		</XPath>
+		<XPath
+			Select="/Configuration/Loggers/Logger[@name='com.geewhiz.pacify']/@level">
+			<Update>
+				<FixedString>DEBUG</FixedString>
+			</Update>
+		</XPath>
+
+	</XMLFile>
 </Pacify>
