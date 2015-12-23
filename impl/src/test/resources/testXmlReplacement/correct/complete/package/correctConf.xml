@@ -1,5 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <root>
 	<foo>
 		<bar>foobar</bar>
 	</foo>
+	<to>
+	   <delete>delete this and the parent</delete>
+	</to>
 </root>

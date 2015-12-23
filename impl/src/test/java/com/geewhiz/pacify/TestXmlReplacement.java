@@ -19,36 +19,48 @@ import com.geewhiz.pacify.test.TestUtil;
 public class TestXmlReplacement {
 	@Test
 	public void testAll() {
-		File source = new File("target/test-classes/testXmlReplacement/correct/complete/package");
+		File testResourceFolder = new File("src/test/resources/testXmlReplacement/correct/complete");
+		File targetResourceFolder = new File("target/test-classes/testXmlReplacement/correct/complete");
 
-		EntityManager entityManager = new EntityManager(source);
-		entityManager.initialize();
+		TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+		EntityManager entityManager = new EntityManager(new File(targetResourceFolder, "package"));
+		LinkedHashSet<Defect> defects = entityManager.initialize();
+
+		TestUtil.checkForNoDefects(defects);
 
 		PMarker pMarker = entityManager.getPMarkers().get(0);
 
 		Assert.assertEquals(1, pMarker.getPXmls().size());
 		Assert.assertEquals("correctConf.xml", pMarker.getPXmls().get(0).getRelativePath());
 		Assert.assertEquals(1, pMarker.getPXmls().get(0).getPProperties().size());
+
+		defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
 		
-		File testResourceFolder = new File("src/test/resources/testXmlReplacement/correct/complete");
-        File targetResourceFolder = new File("target/test-classes/testXmlReplacement/correct/complete");
+		TestUtil.checkForNoDefects(defects);
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
-
-//		Assert.assertEquals("someConf.conf", pMarker.getPFiles().get(0).getRelativePath());
-//		Assert.assertEquals("subfolder/someOtherConf.conf", pMarker.getPFiles().get(1).getRelativePath());
-//		Assert.assertEquals("someParentConf.conf", pMarker.getPFiles().get(2).getRelativePath());
-//
-//		Assert.assertEquals(1, pMarker.getPFiles().get(0).getPProperties().size());
-//		Assert.assertEquals(1, pMarker.getPFiles().get(1).getPProperties().size());
-//		Assert.assertEquals(1, pMarker.getPFiles().get(2).getPProperties().size());
-//
-//		Assert.assertEquals("foobar1", pMarker.getPFiles().get(0).getPProperties().get(0).getName());
-//		Assert.assertEquals("foobar1", pMarker.getPFiles().get(1).getPProperties().get(0).getName());
-//		Assert.assertEquals("foobar2", pMarker.getPFiles().get(2).getPProperties().get(0).getName());
+		// Assert.assertEquals("someConf.conf",
+		// pMarker.getPFiles().get(0).getRelativePath());
+		// Assert.assertEquals("subfolder/someOtherConf.conf",
+		// pMarker.getPFiles().get(1).getRelativePath());
+		// Assert.assertEquals("someParentConf.conf",
+		// pMarker.getPFiles().get(2).getRelativePath());
+		//
+		// Assert.assertEquals(1,
+		// pMarker.getPFiles().get(0).getPProperties().size());
+		// Assert.assertEquals(1,
+		// pMarker.getPFiles().get(1).getPProperties().size());
+		// Assert.assertEquals(1,
+		// pMarker.getPFiles().get(2).getPProperties().size());
+		//
+		// Assert.assertEquals("foobar1",
+		// pMarker.getPFiles().get(0).getPProperties().get(0).getName());
+		// Assert.assertEquals("foobar1",
+		// pMarker.getPFiles().get(1).getPProperties().get(0).getName());
+		// Assert.assertEquals("foobar2",
+		// pMarker.getPFiles().get(2).getPProperties().get(0).getName());
 	}
-	
-	
+
 	private LinkedHashSet<Defect> createPrepareAndExecutePacify(File testResourceFolder, File targetResourceFolder) {
 		TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
 

@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -40,6 +41,7 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.junit.Assert;
 import org.junit.Ignore;
 
+import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.ObjectFactory;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.utils.DirFilter;
@@ -47,106 +49,121 @@ import com.geewhiz.pacify.model.utils.DirFilter;
 @Ignore
 public class TestUtil {
 
-    public static void checkIfResultIsAsExpected(File actual, File expected) {
-        checkIfResultIsAsExpected(actual, expected, "UTF-8");
-    }
+	public static void checkIfResultIsAsExpected(File actual, File expected) {
+		checkIfResultIsAsExpected(actual, expected, "UTF-8");
+	}
 
-    public static void checkIfResultIsAsExpected(File actual, File expected, String encoding) {
-        if (!actual.isDirectory()) {
-            throw new IllegalArgumentException("checkFoler [" + actual.getAbsolutePath() + "] not a folder");
-        }
+	public static void checkIfResultIsAsExpected(File actual, File expected, String encoding) {
+		if (!actual.isDirectory()) {
+			throw new IllegalArgumentException("checkFoler [" + actual.getAbsolutePath() + "] not a folder");
+		}
 
-        if (!expected.isDirectory()) {
-            throw new IllegalArgumentException("resultFolder [" + expected.getAbsolutePath() + "] not a folder");
-        }
+		if (!expected.isDirectory()) {
+			throw new IllegalArgumentException("resultFolder [" + expected.getAbsolutePath() + "] not a folder");
+		}
 
-        // Look that the files exists and are like we want it
-        for (File expectedFile : getFiles(expected)) {
-            String completeRelativePath = expected.getPath();
-            int index = expectedFile.getPath().indexOf(completeRelativePath) + completeRelativePath.length();
-            String relativePath = expectedFile.getPath().substring(index);
+		// Look that the files exists and are like we want it
+		for (File expectedFile : getFiles(expected)) {
+			String completeRelativePath = expected.getPath();
+			int index = expectedFile.getPath().indexOf(completeRelativePath) + completeRelativePath.length();
+			String relativePath = expectedFile.getPath().substring(index);
 
-            File filteredFile = new File(actual, relativePath);
-            try {
+			File filteredFile = new File(actual, relativePath);
+			try {
 
-                Assert.assertEquals("Both files exists.", expectedFile.exists(), filteredFile.exists());
-                Assert.assertEquals("File [" + filteredFile.getPath() + "] doesnt look like [" + expectedFile.getPath() + "].\n",
-                        FileUtils.readFileToString(expectedFile, encoding), FileUtils.readFileToString(filteredFile, encoding));
+				Assert.assertEquals("Both files exists.", expectedFile.exists(), filteredFile.exists());
+				Assert.assertEquals(
+						"File [" + filteredFile.getPath() + "] doesnt look like [" + expectedFile.getPath() + "].\n",
+						FileUtils.readFileToString(expectedFile, encoding),
+						FileUtils.readFileToString(filteredFile, encoding));
 
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
 
-        // Check if there are more files than expected
-        for (File actualFile : getFiles(actual)) {
-            String completeRelativePath = actual.getPath();
-            int index = actualFile.getPath().indexOf(completeRelativePath) + completeRelativePath.length();
-            String relativePath = actualFile.getPath().substring(index);
+		// Check if there are more files than expected
+		for (File actualFile : getFiles(actual)) {
+			String completeRelativePath = actual.getPath();
+			int index = actualFile.getPath().indexOf(completeRelativePath) + completeRelativePath.length();
+			String relativePath = actualFile.getPath().substring(index);
 
-            File expectedFile = new File(expected, relativePath);
-            Assert.assertEquals("Both files exists.", expectedFile.exists(), actualFile.exists());
-        }
+			File expectedFile = new File(expected, relativePath);
+			Assert.assertEquals("Both files exists.", expectedFile.exists(), actualFile.exists());
+		}
 
-    }
+	}
 
-    public static URL getURLForFile(File file) {
-        try {
-            return file.toURI().toURL();
-        } catch (MalformedURLException e) {
-            Assert.fail();
-        }
-        throw new RuntimeException("Shouldn't reach this code!");
-    }
+	public static URL getURLForFile(File file) {
+		try {
+			return file.toURI().toURL();
+		} catch (MalformedURLException e) {
+			Assert.fail();
+		}
+		throw new RuntimeException("Shouldn't reach this code!");
+	}
 
-    private static List<File> getFiles(File folder) {
-        List<File> files = new ArrayList<File>();
+	private static List<File> getFiles(File folder) {
+		List<File> files = new ArrayList<File>();
 
-        Collections.addAll(files, folder.listFiles(new FileFilter() {
-            public boolean accept(File pathName) {
-                return pathName.isFile();
-            }
-        }));
+		Collections.addAll(files, folder.listFiles(new FileFilter() {
+			public boolean accept(File pathName) {
+				return pathName.isFile();
+			}
+		}));
 
-        for (File subFolder : folder.listFiles(new DirFilter())) {
-            files.addAll(getFiles(subFolder));
-        }
+		for (File subFolder : folder.listFiles(new DirFilter())) {
+			files.addAll(getFiles(subFolder));
+		}
 
-        return files;
-    }
+		return files;
+	}
 
-    public static void removeOldTestResourcesAndCopyAgain(File fromFolder, File toFolder) {
-        if (toFolder.exists()) {
-            FileUtils.deleteQuietly(toFolder);
-        }
+	public static void removeOldTestResourcesAndCopyAgain(File fromFolder, File toFolder) {
+		if (toFolder.exists()) {
+			FileUtils.deleteQuietly(toFolder);
+		}
 
-        try {
-            FileUtils.copyDirectory(fromFolder, toFolder);
-        } catch (IOException e) {
-            throw new RuntimeException("error while copy test-resources", e);
-        }
+		try {
+			FileUtils.copyDirectory(fromFolder, toFolder);
+		} catch (IOException e) {
+			throw new RuntimeException("error while copy test-resources", e);
+		}
 
-    }
+	}
 
-    public static ListAppender addListAppenderToLogger() {
-        ListAppender result = new ListAppender();
+	public static ListAppender addListAppenderToLogger() {
+		ListAppender result = new ListAppender();
 
-        // get the root logger
-        Logger logger = LogManager.getLogger("");
+		// get the root logger
+		Logger logger = LogManager.getLogger("");
 
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration config = ctx.getConfiguration();
-        config.addLoggerAppender((org.apache.logging.log4j.core.Logger) logger, result);
+		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+		Configuration config = ctx.getConfiguration();
+		config.addLoggerAppender((org.apache.logging.log4j.core.Logger) logger, result);
 
-        return result;
-    }
+		return result;
+	}
 
-    public static PMarker readPMarker(File file) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        PMarker pMarker = (PMarker) jaxbUnmarshaller.unmarshal(file);
-        pMarker.setFile(file);
+	public static PMarker readPMarker(File file) throws JAXBException {
+		JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
+		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		PMarker pMarker = (PMarker) jaxbUnmarshaller.unmarshal(file);
+		pMarker.setFile(file);
 
-        return pMarker;
-    }
+		return pMarker;
+	}
+
+	public static void checkForNoDefects(LinkedHashSet<Defect> defects) {
+		if (defects.size() == 0)
+			return;
+
+		StringBuffer sb = new StringBuffer();
+		for (Defect defect : defects) {
+			sb.append(defect.getDefectMessage());
+			sb.append(System.getProperty("line.separator"));
+		}
+
+		Assert.fail("We got defects. " + System.getProperty("line.separator") + sb.toString());
+	}
 }

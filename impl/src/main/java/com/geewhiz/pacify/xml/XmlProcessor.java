@@ -1,6 +1,5 @@
 package com.geewhiz.pacify.xml;
 
-import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -8,11 +7,6 @@ import java.util.Map;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
@@ -32,6 +26,8 @@ import com.geewhiz.pacify.model.PNamespace;
 import com.geewhiz.pacify.model.PXPath;
 import com.geewhiz.pacify.model.PXml;
 import com.geewhiz.pacify.model.PXmlCreate;
+import com.geewhiz.pacify.model.PXmlDelete;
+import com.geewhiz.pacify.model.PXmlUpdate;
 
 public class XmlProcessor {
 
@@ -118,30 +114,17 @@ public class XmlProcessor {
 	}
 
 	private void writeDocument(Document document) throws DefectMessage {
-//		Transformer transformer;
 		try {
-			
 			DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
 
-			DOMImplementationLS impl = (DOMImplementationLS)registry.getDOMImplementation("LS");
-			
+			DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
+
 			LSSerializer writer = impl.createLSSerializer();
 			writer.getDomConfig().setParameter("format-pretty-print", Boolean.TRUE);
+			writer.getDomConfig().setParameter("xml-declaration", Boolean.TRUE);
 			LSOutput output = impl.createLSOutput();
 			output.setByteStream(System.out);
 			writer.write(document, output);
-			
-			
-//			transformer = TransformerFactory.newInstance().newTransformer();
-//			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-//			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-//			// initialize StreamResult with File object to save to file
-//			StreamResult result = new StreamResult(new StringWriter());
-//			DOMSource source = new DOMSource(document);
-//			transformer.transform(source, result);
-//			String xmlString = result.getWriter().toString();
-//			System.out.println(xmlString);
-
 		} catch (Exception e) {
 			logger.debug(e);
 			throw new DefectMessage("Error while writing the adjusted xml file.");
@@ -152,9 +135,9 @@ public class XmlProcessor {
 		if (xPath.getCreate() != null)
 			processCreate(document, xPath.getSelect(), xPath.getCreate());
 		if (xPath.getUpdate() != null)
-			processUpdate(xPath);
+			processUpdate(document, xPath.getSelect(), xPath.getUpdate());
 		if (xPath.getDelete() != null)
-			processDelete(xPath);
+			processDelete(document, xPath.getSelect(), xPath.getDelete());
 	}
 
 	private void processCreate(Document document, String xPath, PXmlCreate create) throws DefectException {
@@ -166,14 +149,18 @@ public class XmlProcessor {
 		XMLUtils.addElementToParent(document, xpathSearch, xPath, value);
 	}
 
-	private void processUpdate(PXPath xPath) {
-		// TODO Auto-generated method stub
+	private void processUpdate(Document document, String xPath, PXmlUpdate update) throws DefectException {
+		String value = null;
+		if (update.getFixedString() != null)
+			value = update.getFixedString();
+		else
+			value = propertyValues.get(update.getProperty().getName());
 
+		XMLUtils.updateExistingElement(document, xpathSearch, xPath, value);
 	}
 
-	private void processDelete(PXPath xPath) {
-		// TODO Auto-generated method stub
-
+	private void processDelete(Document document, String xPath, PXmlDelete delete) throws DefectException {
+		XMLUtils.deleteExistingElement(document, xpathSearch, xPath);
 	}
 
 }

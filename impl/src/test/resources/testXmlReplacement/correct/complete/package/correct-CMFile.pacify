@@ -1,4 +1,5 @@
-<Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://D5430988/c$/oppermans002/projekte/0_external/PACIFy/model/src/main/resources/pacify.xsd">
+<Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="file://D5430988/c$/oppermans002/projekte/0_external/PACIFy/model/src/main/resources/pacify.xsd">
 	<XMLFile RelativePath="correctConf.xml">
 		<XPath Select="/root/foo/foo">
 			<Create>
@@ -7,8 +8,16 @@
 		</XPath>
 		<XPath Select="/root/bar/foo">
 			<Create>
-				<Property Name="barfoo"/>
+				<Property Name="barfoo" />
 			</Create>
+		</XPath>
+		<XPath Select="/root/foo/bar">
+			<Update>
+				<FixedString>foobarCHANGED</FixedString>
+			</Update>
+		</XPath>
+		<XPath Select="/root/to">
+			<Delete />
 		</XPath>
 	</XMLFile>
 </Pacify>

@@ -96,13 +96,39 @@ public class XMLUtils {
 		}
 	}
 
+	public static void updateExistingElement(Document document, XPath xpathSearch, String xpath, String value)
+			throws DefectException {
+		try {
+			Node node = (Node) xpathSearch.evaluate(xpath, document, XPathConstants.NODE);
+			node.setTextContent(value);
+		} catch (Exception e) {
+			logger.debug(e);
+			throw new DefectMessage("Error while trying to update xpath [" + xpath + "] expression.");
+		}
+	}
+
+	public static void deleteExistingElement(Document document, XPath xpathSearch, String xpath)
+			throws DefectException {
+		try {
+			String parentXPath = getParentXPath(xpath);
+
+			Node parentNode = (Node) xpathSearch.evaluate(parentXPath, document, XPathConstants.NODE);
+			Node childNode = (Node) xpathSearch.evaluate(xpath, document, XPathConstants.NODE);
+
+			parentNode.removeChild(childNode);
+		} catch (Exception e) {
+			logger.debug(e);
+			throw new DefectMessage("Error while trying to delete xpath [" + xpath + "] .");
+		}
+	}
+
 	public static Node addElementToParent(Document document, XPath xpathSearch, String xpath, String value)
 			throws DefectException {
 
 		try {
 
-			String elementName = XMLUtils.getChildElementName(xpath);
-			String parentXPath = XMLUtils.getParentXPath(xpath);
+			String elementName = getChildElementName(xpath);
+			String parentXPath = getParentXPath(xpath);
 
 			Node parentNode = (Node) xpathSearch.evaluate(parentXPath, document, XPathConstants.NODE);
 			if (parentNode == null) {
@@ -110,10 +136,10 @@ public class XMLUtils {
 			}
 
 			// create younger siblings if needed
-			Integer childIndex = XMLUtils.getChildElementIndex(xpath);
+			Integer childIndex = getChildElementIndex(xpath);
 			if (childIndex > 1) {
-				NodeList nodelist = (NodeList) xpathSearch.evaluate(XMLUtils.createPositionXpath(xpath, childIndex),
-						document, XPathConstants.NODESET);
+				NodeList nodelist = (NodeList) xpathSearch.evaluate(createPositionXpath(xpath, childIndex), document,
+						XPathConstants.NODESET);
 
 				// how many to create = (index wanted - existing - 1 to account
 				// for
@@ -129,12 +155,12 @@ public class XMLUtils {
 			Node node = document.createElement(elementName);
 			Node created = ((Node) parentNode).appendChild(node);
 			if (null != value) {
-				created.appendChild(document.createTextNode(value));
+				created.setTextContent(value);
 			}
 			return created;
-		} catch (XPathExpressionException e) {
+		} catch (Exception e) {
 			logger.debug(e);
-			throw new DefectMessage("Error while evaluating xpath [" + xpath + "] expression.");
+			throw new DefectMessage("Error while trying to add xpath [" + xpath + "].");
 		}
 	}
 
