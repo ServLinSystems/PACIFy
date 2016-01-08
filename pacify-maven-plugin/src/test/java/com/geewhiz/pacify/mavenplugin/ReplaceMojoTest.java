@@ -29,6 +29,16 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
+import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
+import org.eclipse.aether.spi.connector.transport.TransporterFactory;
+import org.eclipse.aether.transport.file.FileTransporterFactory;
+import org.eclipse.aether.transport.http.HttpTransporterFactory;
 
 import com.geewhiz.pacify.mavenplugin.mojo.ReplaceMojo;
 
@@ -48,6 +58,23 @@ public class ReplaceMojoTest extends AbstractMojoTestCase {
 
 		ReplaceMojo replaceMojo = (ReplaceMojo) this.lookupConfiguredMojo(project, "replace");
 		assertNotNull(replaceMojo);
+		
+		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
+		locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
+		locator.addService(TransporterFactory.class, FileTransporterFactory.class);
+		locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
+		
+		RepositorySystem system = locator.getService(RepositorySystem.class);
+
+		LocalRepository localRepository = new LocalRepository("c:/oppermans002/maven_repo");
+		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+		session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepository));
+//		session.setTransferListener(new ConsoleTransferListener());
+//		session.setRepositoryListener(new ConsoleRepositoryListener());
+
+		setVariableValueToObject(replaceMojo, "repoSystem", system);
+		setVariableValueToObject(replaceMojo, "repoSession", session);
+
 
 		try {
 			replaceMojo.execute();

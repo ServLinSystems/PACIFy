@@ -20,14 +20,13 @@ package com.geewhiz.pacify.mavenplugin.mojo;
  */
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
 
 import com.geewhiz.pacify.Replacer;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 
-/**
- * @goal replace
- * @phase generate-resources
- */
+@Mojo(name = "replace", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, requiresOnline = false, requiresProject = true, threadSafe = true)
 public class ReplaceMojo extends BaseResolveMojo {
 
 	@Override
